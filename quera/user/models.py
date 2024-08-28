@@ -9,7 +9,7 @@ class Teacher(models.Model):
     email = models.EmailField()
     classes = models.ManyToManyField(Class ,related_name="teacher_classes", blank=True)
     bootcamps = models.ManyToManyField(Bootcamp ,related_name="teacher_bootcamps", blank=True)
-    password = models.CharField(max_length=30, default="123456")
+    password = models.CharField(max_length=255, default="123456")
 
     def __str__(self) -> str:  
         return self.email
@@ -20,7 +20,7 @@ class Student(models.Model):
     email = models.EmailField()
     classes = models.ManyToManyField(Class ,related_name="student_classes", blank=True)
     bootcamps = models.ManyToManyField(Bootcamp ,related_name="student_bootcamps", blank=True)
-    password = models.CharField(max_length=30, default="123456")
+    password = models.CharField(max_length=255, default="123456")
 
     def __str__(self) -> str:  
         return self.email
