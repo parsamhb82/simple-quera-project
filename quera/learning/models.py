@@ -12,8 +12,8 @@ class Bootcamp(models.Model):
 
 class Class(models.Model):
     name = models.CharField(max_length=25)
-    assingment = models.ManyToManyField(Question ,related_name="assignments", blank=True, null=True)
-    lesson = models.ManyToManyField(Lesson , related_name="lessons", blank=True, null=True)
+    assingment = models.ManyToManyField(Question ,related_name="assignments", blank=True)
+    lesson = models.ManyToManyField(Lesson , related_name="lessons", blank=True)
 
     def __str__(self) -> str:  
         return self.name

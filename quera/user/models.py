@@ -7,9 +7,9 @@ class Teacher(models.Model):
     name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     email = models.EmailField()
-    classes = models.ManyToManyField(Class ,related_name="teacher_classes", blank=True, null=True)
-    bootcamps = models.ManyToManyField(Bootcamp ,related_name="teacher_bootcamps", blank=True, null=True)
-    passsword = models.CharField(max_length=30, default="123456")
+    classes = models.ManyToManyField(Class ,related_name="teacher_classes", blank=True)
+    bootcamps = models.ManyToManyField(Bootcamp ,related_name="teacher_bootcamps", blank=True)
+    password = models.CharField(max_length=30, default="123456")
 
     def __str__(self) -> str:  
         return self.email
@@ -18,8 +18,8 @@ class Student(models.Model):
     name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     email = models.EmailField()
-    classes = models.ManyToManyField(Class ,related_name="student_classes", blank=True, null=True)
-    bootcamps = models.ManyToManyField(Bootcamp ,related_name="student_bootcamps", blank=True, null=True)
+    classes = models.ManyToManyField(Class ,related_name="student_classes", blank=True)
+    bootcamps = models.ManyToManyField(Bootcamp ,related_name="student_bootcamps", blank=True)
     password = models.CharField(max_length=30, default="123456")
 
     def __str__(self) -> str:  
@@ -31,5 +31,5 @@ class Student_answer(models.Model):
     answer = models.TextField()
     true_percentange = models.IntegerField()
     def __str__(self) -> str:
-        return f"{self.student}, {self.question}, {self.answer}"
+        return f"{self.student.email}, {self.question.name}, {self.answer}"
 

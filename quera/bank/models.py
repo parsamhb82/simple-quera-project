@@ -13,7 +13,7 @@ class Question(models.Model):
 
 class Lesson(models.Model):
     subject = models.CharField(max_length=25)
-    text = models.TextField()
+    text = models.TextField()   
     
     def __str__(self) -> str:  
         return self.subject

@@ -5,6 +5,7 @@ from django.shortcuts import render
 import json
 from bank.models import Question,  Lesson
 from learning.models import Class ,Bootcamp
+from django.db import IntegrityError
 
 def bootcamp_list(request):
     bootcamps = Bootcamp.objects.all()
@@ -39,11 +40,14 @@ def creat_class(request):
             class_ = Class.objects.create(name=class_name)
             class_.save()
             teacher.classes.add(class_)
+            teacher.save()
             return JsonResponse({'message': 'class created successfully and teacher was assigned to it'}, safe=False)
-        except Class.DoesNotExist:
-            return JsonResponse({'error': 'class not created'}, safe=False)
         except Teacher.DoesNotExist:
             return JsonResponse({'error': 'teacher does not exist'}, safe=False)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON data'}, safe=False)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, safe=False)
     else:
         return JsonResponse({'error': 'Post request required'}, status=405)
 def add_assignmet_to_class(request):
@@ -61,6 +65,10 @@ def add_assignmet_to_class(request):
             return JsonResponse({'error': 'class does not exist'}, safe=False)
         except Lesson.DoesNotExist:
             return JsonResponse({'error': 'assignmet does not exist'}, safe=False)
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON data'}, safe=False)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, safe=False)
     else:
         return JsonResponse({'error': 'Post request required'}, status=405)
 
@@ -74,11 +82,13 @@ def add_lesson_to_class(request):
             lesson_to_add = Lesson.objects.get(id=lesson_id)
             class_to_add.lesson.add(lesson_to_add)
             class_to_add.save()
-            return JsonResponse({'message': 'lesson added to class successfully'})
+            return JsonResponse({'message': 'lesson added to class successfully'}, safe=False)
         except Class.DoesNotExist:
-            return JsonResponse({'error': 'class does not exist'})
+            return JsonResponse({'error': 'class does not exist'}, safe=False)
         except Lesson.DoesNotExist:
-            return JsonResponse({'error': 'lesson does not exist'})
+            return JsonResponse({'error': 'lesson does not exist'}, safe=False)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, safe=False)
     else:
         return JsonResponse({'error': 'Post request required'}, status=405)
 
@@ -96,10 +106,44 @@ def add_bootcamp(request):
             teacher.bootcamps.add(bootcamp)
             teacher.save()
             bootcamp.save()
-            return JsonResponse({'message': 'bootcamp created successfully and teacher was assigned to it'})
+            return JsonResponse({'message': 'bootcamp created successfully and teacher was assigned to it'}, safe=False)
         except Bootcamp.DoesNotExist:
-            return JsonResponse({'error': 'bootcamp not created'})
+            return JsonResponse({'error': 'bootcamp not created'}, safe=False)
         except Teacher.DoesNotExist:
-            return JsonResponse({'error': 'teacher does not exist'})
+            return JsonResponse({'error': 'teacher does not exist'}, safe=False)
+        except json.JSONDecodeError:
+            return JsonResponse({'error' : 'incorrect json data'}, safe=False)
+        except Exception as e :
+            return JsonResponse({'error': str(e)}, safe=False)
     else:
         return JsonResponse({'error': 'Post request required'}, status=405)
+
+def get_class(request, class_id):
+    try:
+        class_ = Class.objects.get(id=class_id)
+        return JsonResponse({
+            'class_name' : class_.name,
+            'lessons' : [lesson.subject for lesson in class_.lesson.all()],
+            'assingments' : [assignmet.name for assignmet in class_.assingment.all()],
+        }, safe=False)
+    
+    except Class.DoesNotExist:
+        return JsonResponse({'error': 'class does not exist'}, safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, safe=False)
+
+def get_bootcamp(request, bootcamp_id):
+    try:
+        bootcamp = Bootcamp.objects.get(id=bootcamp_id)
+        return JsonResponse({
+            'bootcamp_name' : bootcamp.name,
+            'bootcamp_price' : bootcamp.price,
+            'bootcamp_start_date' : bootcamp.start_date,
+            'bootcamp_duration' : bootcamp.duration
+
+        }, safe=False)
+
+    except Bootcamp.DoesNotExist:
+        return JsonResponse({'error': 'bootcamp does not exist'}, safe=False)
+    except Exception as e:
+        return JsonResponse({'error' : f'error {str(e)}'})
