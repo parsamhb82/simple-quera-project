@@ -185,7 +185,7 @@ def add_teacher_to_bootcamp(request):
             return JsonResponse({'error': f'Missing required field: {str(e)}'}, status=400)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
-
+@csrf_exempt
 def register_new_student(request):
     if request.method == 'POST':
         try:
@@ -193,7 +193,7 @@ def register_new_student(request):
             name = data['name']
             last_name = data['last_name']
             email = data['email']
-            password = data['password']
+            password = make_password(data['password'])
             if Student.objects.filter(email=email).exists():
                 return JsonResponse({'error': 'student with this email already exists'}, safe= False)
             
@@ -214,7 +214,7 @@ def register_new_student(request):
             return JsonResponse({'error': str(e)}, safe=False)
     else:
         return JsonResponse({'error': 'Post request required'}, status=405)
-
+@csrf_exempt
 def register_new_teacher(request):
     if request.method == 'POST':
         try:
@@ -222,7 +222,7 @@ def register_new_teacher(request):
             name = data['name']
             last_name = data['last_name']
             email = data['email']
-            password = data['password']
+            password = make_password(data['password'])
             if Teacher.objects.filter(email=email).exists():
                 return JsonResponse({'error': 'teacher with this email already exists'}, safe= False)
 

@@ -31,6 +31,8 @@ def lessons_list(request):
         }
         )
     return JsonResponse(lessons_list_, safe=False)
+
+@csrf_exempt
 def add_question(request):
     if request.method == 'POST':
         try:
@@ -60,6 +62,7 @@ def add_question(request):
     
     return JsonResponse({'message': 'Invalid request method'})
 
+@csrf_exempt
 def add_lesson(request):
     if request.method == 'POST':
         try:

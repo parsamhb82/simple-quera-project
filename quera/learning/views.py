@@ -27,7 +27,7 @@ def classes_list(request):
             'lessons' : [lesson.subject for lesson in class_.lesson.all()],
         })
     return JsonResponse(data, safe=False)
-
+@csrf_exempt
 def creat_class(request):
     if request.method == 'POST':
         try:
@@ -50,6 +50,7 @@ def creat_class(request):
             return JsonResponse({'error': str(e)}, safe=False)
     else:
         return JsonResponse({'error': 'Post request required'}, status=405)
+@csrf_exempt
 def add_assignmet_to_class(request):
     if request.method == 'POST':
         try:
@@ -57,7 +58,7 @@ def add_assignmet_to_class(request):
             class_id = data['class_id']
             class_to_add = Class.objects.get(id=class_id)
             assignmet_id = data['assignmet_id']
-            assignmet_to_add = Lesson.objects.get(id=assignmet_id)
+            assignmet_to_add = Question.objects.get(id=assignmet_id)
             class_to_add.assingment.add(assignmet_to_add)
             class_to_add.save()
             return JsonResponse({'message': 'assignmet added to class successfully'}, safe=False)
@@ -71,7 +72,7 @@ def add_assignmet_to_class(request):
             return JsonResponse({'error': str(e)}, safe=False)
     else:
         return JsonResponse({'error': 'Post request required'}, status=405)
-
+@csrf_exempt
 def add_lesson_to_class(request):
     if request.method == 'POST':
         try:
@@ -91,7 +92,7 @@ def add_lesson_to_class(request):
             return JsonResponse({'error': str(e)}, safe=False)
     else:
         return JsonResponse({'error': 'Post request required'}, status=405)
-
+@csrf_exempt
 def add_bootcamp(request):
     if request.method == 'POST':
         try:
