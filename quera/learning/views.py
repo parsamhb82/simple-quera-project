@@ -39,11 +39,11 @@ def creat_class(request):
             class_ = Class.objects.create(name=class_name)
             class_.save()
             teacher.classes.add(class_)
-            return JsonResponse({'message': 'class created successfully and teacher was assigned to it'})
+            return JsonResponse({'message': 'class created successfully and teacher was assigned to it'}, safe=False)
         except Class.DoesNotExist:
-            return JsonResponse({'error': 'class not created'})
+            return JsonResponse({'error': 'class not created'}, safe=False)
         except Teacher.DoesNotExist:
-            return JsonResponse({'error': 'teacher does not exist'})
+            return JsonResponse({'error': 'teacher does not exist'}, safe=False)
     else:
         return JsonResponse({'error': 'Post request required'}, status=405)
 def add_assignmet_to_class(request):
@@ -56,11 +56,11 @@ def add_assignmet_to_class(request):
             assignmet_to_add = Lesson.objects.get(id=assignmet_id)
             class_to_add.assingment.add(assignmet_to_add)
             class_to_add.save()
-            return JsonResponse({'message': 'assignmet added to class successfully'})
+            return JsonResponse({'message': 'assignmet added to class successfully'}, safe=False)
         except Class.DoesNotExist:
-            return JsonResponse({'error': 'class does not exist'})
+            return JsonResponse({'error': 'class does not exist'}, safe=False)
         except Lesson.DoesNotExist:
-            return JsonResponse({'error': 'assignmet does not exist'})
+            return JsonResponse({'error': 'assignmet does not exist'}, safe=False)
     else:
         return JsonResponse({'error': 'Post request required'}, status=405)
 
