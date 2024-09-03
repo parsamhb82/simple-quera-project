@@ -6,6 +6,9 @@ from django.http import JsonResponse
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
+from .serializers import QuestionSerializer, LessonSerializer
+
+from rest_framework.generics import ListAPIView, CreateAPIView, DestroyAPIView, RetrieveAPIView, UpdateAPIView
 
 
 def questions_list(request):
@@ -110,3 +113,26 @@ def get_lesson(request, lesson_id):
     except Exception as e:
         return JsonResponse({'message': 'An error occurred'}, safe=False)
             
+class QuestionListAPIView(ListAPIView):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+
+class QuestionCreateAPIView(CreateAPIView):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+
+class LessonListView(ListAPIView):
+    queryset = Lesson.objects.all()
+    serializer_class = LessonSerializer
+
+class LessonCreateAPIView(CreateAPIView):
+    queryset = Lesson.objects.all()
+    serializer_class = LessonSerializer
+
+class LessonDetailView(RetrieveAPIView):
+    queryset = Lesson.objects.all()
+    serializer_class = LessonSerializer
+
+class QuestionDetailView(RetrieveAPIView):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer

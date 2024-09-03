@@ -1,11 +1,11 @@
 from django.urls import path
 from bank.views import questions_list , lessons_list , add_question, add_lesson, get_lesson, get_question
-
+from bank.views import QuestionListAPIView, QuestionCreateAPIView, LessonListView, LessonCreateAPIView, LessonDetailView, QuestionDetailView
 urlpatterns = [
-    path('questions/', questions_list),
-    path('lessons/', lessons_list),
-    path('add-question/', add_question),
-    path('add-lesson/', add_lesson),
-    path('get-lesson/<str:lesson_id>', get_lesson),
-    path('get-question/<str:question_id>', get_question)
+    path('questions/', QuestionListAPIView.as_view()),
+    path('lessons/', LessonListView.as_view()),
+    path('add-question/', QuestionCreateAPIView.as_view()),
+    path('add-lesson/', LessonCreateAPIView.as_view()),
+    path('get-lesson/<int:pk>', LessonDetailView.as_view()),
+    path('get-question/<int:pk>', QuestionDetailView.as_view())
 ]

@@ -6,7 +6,8 @@ import json
 from bank.models import Question,  Lesson
 from learning.models import Class ,Bootcamp
 from django.db import IntegrityError
-
+from .serializers import ClassSerializer, BootcampSerializer
+from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
 def bootcamp_list(request):
     bootcamps = Bootcamp.objects.all()
     data = []
@@ -148,3 +149,27 @@ def get_bootcamp(request, bootcamp_id):
         return JsonResponse({'error': 'bootcamp does not exist'}, safe=False)
     except Exception as e:
         return JsonResponse({'error' : f'error {str(e)}'})
+
+class BootcampListView(ListAPIView):
+    queryset = Bootcamp.objects.all()
+    serializer_class = BootcampSerializer
+
+class ClassListView(ListAPIView):
+    queryset = Class.objects.all()
+    serializer_class = ClassSerializer
+
+class RetrieveBootcampView(RetrieveAPIView):
+    queryset = Bootcamp.objects.all()
+    serializer_class = BootcampSerializer
+
+class RetrieveClassView(RetrieveAPIView):
+    queryset = Class.objects.all()
+    serializer_class = ClassSerializer
+
+class CreatClass(CreateAPIView):
+    queryset = Class.objects.all()
+    serializer_class = ClassSerializer
+
+class CreatBootcamp(CreateAPIView):
+    queryset = Bootcamp.objects.all()
+    serializer_class = BootcampSerializer
