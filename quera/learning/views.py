@@ -1,13 +1,19 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from user.models import Teacher, Student, Student_answer
+from rest_framework.views import APIView
 from django.shortcuts import render
 import json
+from rest_framework.response import Response
 from bank.models import Question,  Lesson
 from learning.models import Class ,Bootcamp
 from django.db import IntegrityError
 from .serializers import ClassSerializer, BootcampSerializer
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
+
+
 def bootcamp_list(request):
     bootcamps = Bootcamp.objects.all()
     data = []
@@ -173,3 +179,44 @@ class CreatClass(CreateAPIView):
 class CreatBootcamp(CreateAPIView):
     queryset = Bootcamp.objects.all()
     serializer_class = BootcampSerializer
+
+from .serializers import AddAssignmentSerializer
+class AddAssignmentToClassView(APIView):
+    def post(self, request, class_id):
+        serializer = AddAssignmentSerializer(data=request.data)
+        if serializer.is_valid():
+            class_id = serializer.validated_data['class_id']
+            assignmet_id = serializer.validated_data['assignmet_id']
+            try:
+                class_to_add = Class.objects.get(id=class_id)
+                assignmet_to_add = Question.objects.get(id=assignmet_id)
+                class_to_add.assingment.add(assignmet_to_add)
+                class_to_add.save()
+                return Response({'message': 'Assignment added to class successfully'}, status=status.HTTP_200_OK)
+            except Class.DoesNotExist:
+                return Response({'error': 'Class does not exist'}, status=status.HTTP_404_NOT_FOUND)
+            except Question.DoesNotExist:
+                return Response({'error': 'Assignment does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+from .serializers import AddLessonSerializer
+
+class AddLessonSerilizer(APIView):
+    def post(self, request, class_id):
+        serializer = AddLessonSerializer(data=request.data)
+        if serializer.is_valid():
+            class_id = serializer.validated_data['class_id']
+            lesson_id = serializer.validated_data['lesson_id']
+            try:
+                class_to_add = Class.objects.get(id=class_id)
+                lesson_to_add = Lesson.objects.get(id=lesson_id)
+                class_to_add.lesson.add(lesson_to_add)
+                class_to_add.save()
+                return Response({'message': 'Lesson added to class successfully'}, status=status.HTTP_200_OK)
+            except Class.DoesNotExist:
+                return Response({'error': 'Class does not exist'}, status=status.HTTP_404_NOT_FOUND)
+            except Lesson.DoesNotExist:
+                return Response({'error': 'Lesson does not exist'}, status=status.HTTP_404_NOT_FOUND)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
