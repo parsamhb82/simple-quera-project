@@ -81,3 +81,13 @@ class StudentAnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student_answer
         fields = '__all__'
+
+class AddStudentSerializer(serializers.Serializer):
+    student_email = serializers.EmailField()
+    class_id = serializers.IntegerField(required=False)
+    bootcamp_id = serializers.IntegerField(required=False)
+
+class AddTeacherSerializer(serializers.Serializer):
+    teacher_email = serializers.EmailField()
+    class_id = serializers.IntegerField(required=False)
+    bootcamp_id = serializers.IntegerField(required=False)

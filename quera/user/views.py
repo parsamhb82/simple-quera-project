@@ -162,3 +162,76 @@ class TeacherRegistrationView(APIView):
         return Response(serilizer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
+from .serializers import AddStudentSerializer, AddTeacherSerializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+
+class AddStudentToClass(APIView):
+    def post(self, request):
+        serializer = AddStudentSerializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                student = Student.objects.get(email=serializer.validated_data['student_email'])
+                class_id = serializer.validated_data['class_id']
+                class_to_add = Class.objects.get(id=class_id)
+                student.classes.add(class_to_add)
+                student.save()
+                return Response({'message': 'Student added to class successfully'}, status=status.HTTP_200_OK)
+            except Student.DoesNotExist:
+                return Response({'error': 'Student does not exist'}, status=status.HTTP_404_NOT_FOUND)
+            except Class.DoesNotExist:
+                return Response({'error': 'Class does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class AddStudentToBootcamp(APIView):
+    def post(self, request):
+        serializer = AddStudentSerializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                student = Student.objects.get(email=serializer.validated_data['student_email'])
+                bootcamp_id = serializer.validated_data['bootcamp_id']
+                bootcamp_to_add = Bootcamp.objects.get(id=bootcamp_id)
+                student.bootcamps.add(bootcamp_to_add)
+                student.save()
+                return Response({'message': 'Student added to bootcamp successfully'}, status=status.HTTP_200_OK)
+            except Student.DoesNotExist:
+                return Response({'error': 'Student does not exist'}, status=status.HTTP_404_NOT_FOUND)
+            except Bootcamp.DoesNotExist:
+                return Response({'error': 'Bootcamp does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class AddTeacherToClass(APIView):
+    def post(self, request):
+        serializer = AddTeacherSerializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                teacher = Teacher.objects.get(email=serializer.validated_data['teacher_email'])
+                class_id = serializer.validated_data['class_id']
+                class_to_add = Class.objects.get(id=class_id)
+                teacher.classes.add(class_to_add)
+                teacher.save()
+                return Response({'message': 'Teacher added to class successfully'}, status=status.HTTP_200_OK)
+            except Teacher.DoesNotExist:
+                return Response({'error': 'Teacher does not exist'}, status=status.HTTP_404_NOT_FOUND)
+            except Class.DoesNotExist:
+                return Response({'error': 'Class does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class AddTeacherToBootcamp(APIView):
+    def post(self, request):
+        serializer = AddTeacherSerializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                teacher = Teacher.objects.get(email=serializer.validated_data['teacher_email'])
+                bootcamp_id = serializer.validated_data['bootcamp_id']
+                bootcamp_to_add = Bootcamp.objects.get(id=bootcamp_id)
+                teacher.bootcamps.add(bootcamp_to_add)
+                teacher.save()
+                return Response({'message': 'Teacher added to bootcamp successfully'}, status=status.HTTP_200_OK)
+            except Teacher.DoesNotExist:
+                return Response({'error': 'Teacher does not exist'}, status=status.HTTP_404_NOT_FOUND)
+            except Bootcamp.DoesNotExist:
+                return Response({'error': 'Bootcamp does not exist'}, status=status.HTTP_404_NOT_FOUND)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
