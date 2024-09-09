@@ -14,6 +14,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework_simplejwt.views import TokenObtainPairView,TokenRefreshView
+from .permissions import IsTeacher, IsStudent, IsSuperUser
 
 class Login(TokenObtainPairView):
     pass
@@ -21,18 +22,22 @@ class Login(TokenObtainPairView):
 class Refresh(TokenRefreshView):
     pass
 class TeachersListView(ListAPIView):
+    permission_classes = [IsAuthenticated, IsSuperUser]
     queryset = Teacher.objects.all()
     serializer_class = TeacherSerializer
 
 class StudentListView(ListAPIView):
+    permission_classes = [IsAuthenticated, IsSuperUser]
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
 
 class RetrieveTeacherView(RetrieveAPIView):
+    permission_classes = [IsAuthenticated, IsSuperUser]
     queryset = Teacher.objects.all()
     serializer_class = TeacherSerializer
 
 class RetrieveStudentView(RetrieveAPIView):
+    permission_classes = [IsAuthenticated, IsSuperUser]
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
 
@@ -42,12 +47,12 @@ class RetrieveStudentView(RetrieveAPIView):
 class CreatStudentAnswer(CreateAPIView):
     queryset = Student_answer.objects.all()
     serializer_class = StudentAnswerSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsStudent]
 
 class OwnStudentAnswer(ListAPIView):
     queryset = Student_answer.objects.all()
     serializer_class = StudentAnswerSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsStudent]
 
     def get_queryset(self):
         return Student_answer.objects.filter(student=self.request.user.student)
@@ -168,6 +173,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 class AddStudentToClass(APIView):
+    permission_classes = [IsAuthenticated, IsTeacher]
     def post(self, request):
         serializer = AddStudentSerializer(data=request.data)
         if serializer.is_valid():
@@ -185,6 +191,7 @@ class AddStudentToClass(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class AddStudentToBootcamp(APIView):
+    permission_classes = [IsAuthenticated, IsTeacher]
     def post(self, request):
         serializer = AddStudentSerializer(data=request.data)
         if serializer.is_valid():
@@ -202,6 +209,7 @@ class AddStudentToBootcamp(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class AddTeacherToClass(APIView):
+    permission_classes = [IsAuthenticated, IsSuperUser]
     def post(self, request):
         serializer = AddTeacherSerializer(data=request.data)
         if serializer.is_valid():
@@ -219,6 +227,7 @@ class AddTeacherToClass(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class AddTeacherToBootcamp(APIView):
+    permission_classes = [IsAuthenticated, IsSuperUser]
     def post(self, request):
         serializer = AddTeacherSerializer(data=request.data)
         if serializer.is_valid():

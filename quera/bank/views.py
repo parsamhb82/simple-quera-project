@@ -112,27 +112,34 @@ def get_lesson(request, lesson_id):
         return JsonResponse({'message': 'Lesson not found'}, safe=False)
     except Exception as e:
         return JsonResponse({'message': 'An error occurred'}, safe=False)
-            
+
+from user.permissions import IsSuperUser, IsTeacher, IsStudent
 class QuestionListAPIView(ListAPIView):
+    permission_classes = [IsSuperUser]
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
 
 class QuestionCreateAPIView(CreateAPIView):
+    permission_classes = [IsTeacher]
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
 
 class LessonListView(ListAPIView):
+    permission_classes = [IsSuperUser]
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
 
 class LessonCreateAPIView(CreateAPIView):
+    permission_classes = [IsTeacher]
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
 
 class LessonDetailView(RetrieveAPIView):
+    permission_classes = [IsSuperUser | IsTeacher]
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
 
 class QuestionDetailView(RetrieveAPIView):
+    permission_classes = [IsSuperUser | IsTeacher]
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer

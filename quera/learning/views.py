@@ -12,6 +12,7 @@ from .serializers import ClassSerializer, BootcampSerializer
 from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
+from user.permissions import IsSuperUser, IsTeacher, IsStudent
 
 
 def bootcamp_list(request):
@@ -157,31 +158,38 @@ def get_bootcamp(request, bootcamp_id):
         return JsonResponse({'error' : f'error {str(e)}'})
 
 class BootcampListView(ListAPIView):
+    permission_classes = [IsAuthenticated, IsSuperUser]
     queryset = Bootcamp.objects.all()
     serializer_class = BootcampSerializer
 
 class ClassListView(ListAPIView):
+    permission_classes = [IsAuthenticated, IsSuperUser]
     queryset = Class.objects.all()
     serializer_class = ClassSerializer
 
 class RetrieveBootcampView(RetrieveAPIView):
+    permission_classes = [IsAuthenticated, IsSuperUser]
     queryset = Bootcamp.objects.all()
     serializer_class = BootcampSerializer
 
 class RetrieveClassView(RetrieveAPIView):
+    permission_classes = [IsAuthenticated, IsSuperUser]
     queryset = Class.objects.all()
     serializer_class = ClassSerializer
 
 class CreatClass(CreateAPIView):
+    permission_classes = [IsAuthenticated, IsSuperUser]
     queryset = Class.objects.all()
     serializer_class = ClassSerializer
 
 class CreatBootcamp(CreateAPIView):
+    permission_classes = [IsAuthenticated, IsSuperUser]
     queryset = Bootcamp.objects.all()
     serializer_class = BootcampSerializer
 
 from .serializers import AddAssignmentSerializer
 class AddAssignmentToClassView(APIView):
+    permission_classes = [IsAuthenticated, IsTeacher]
     def post(self, request, class_id):
         serializer = AddAssignmentSerializer(data=request.data)
         if serializer.is_valid():
@@ -189,6 +197,8 @@ class AddAssignmentToClassView(APIView):
             assignmet_id = serializer.validated_data['assignmet_id']
             try:
                 class_to_add = Class.objects.get(id=class_id)
+                if request.user.teacher.id != class_to_add.teacher.id:
+                    return Response({'error': 'You are not allowed to add assignment to this class'}, status=status.HTTP_403_FORBIDDEN)
                 assignmet_to_add = Question.objects.get(id=assignmet_id)
                 class_to_add.assingment.add(assignmet_to_add)
                 class_to_add.save()
@@ -202,6 +212,7 @@ class AddAssignmentToClassView(APIView):
 from .serializers import AddLessonSerializer
 
 class AddLessonSerilizer(APIView):
+    permission_classes = [IsAuthenticated, IsTeacher]
     def post(self, request, class_id):
         serializer = AddLessonSerializer(data=request.data)
         if serializer.is_valid():
@@ -209,6 +220,8 @@ class AddLessonSerilizer(APIView):
             lesson_id = serializer.validated_data['lesson_id']
             try:
                 class_to_add = Class.objects.get(id=class_id)
+                if request.user.teacher.id != class_to_add.teacher.id:
+                    return Response({'error': 'You are not allowed to add lesson to this class'}, status=status.HTTP_403_FORBIDDEN)
                 lesson_to_add = Lesson.objects.get(id=lesson_id)
                 class_to_add.lesson.add(lesson_to_add)
                 class_to_add.save()
